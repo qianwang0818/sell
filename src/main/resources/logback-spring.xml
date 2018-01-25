@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<configuration>
+
+    <!--定义配置项,控制台输出-->
+    <appender name="consoleLog" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <!--定义配置项-滚动输出-->
+    <appender name="fileInfoLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--级别过滤器.如果日志级别等于配置级别,进行针对处理-->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <!--设置固定的当日的文件名,可以不固定-->
+        <!--<file>log/log-info/info.log</file>-->
+        <!--日志格式配置-->
+        <encoder><!-- 必须指定，否则不会往文件输出内容 -->
+            <!--<pattern>%d{ABSOLUTE} %5p %c{1}:%L - %m%n</pattern>-->
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n</pattern>
+        </encoder>
+        <!--滚动策略-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--设置路径和文件名-->
+            <!--如果固定当日文件名,前一天的文件名会重命名为指定格式-->
+            <fileNamePattern>log/log-info/info-%d{yyyyMMdd}.log</fileNamePattern>
+            <!--超过30天的log文件会被自动删除-->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <!--保证是添加而不会覆盖原日志-->
+        <append>false</append>
+        <!--压缩相关,注释掉也没事-->
+        <!--<prudent>false</prudent>-->
+    </appender>
+
+    <!--定义配置项-滚动输出-->
+    <appender name="fileWarnLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--级别过滤器.如果日志级别等于配置级别,进行针对处理-->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <!--设置固定的当日的文件名,可以不固定-->
+        <!--<file>log/log-warn/warn.log</file>-->
+        <!--日志格式配置-->
+        <encoder><!-- 必须指定，否则不会往文件输出内容 -->
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n</pattern>
+        </encoder>
+        <!--滚动策略-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--设置路径和文件名-->
+            <!--如果固定当日文件名,前一天的文件名会重命名为指定格式-->
+            <fileNamePattern>log/log-warn/warn-%d{yyyyMMdd}.log</fileNamePattern>
+            <!--超过30天的log文件会被自动删除-->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <!--保证是添加而不会覆盖原日志-->
+        <append>false</append>
+        <!--压缩相关,注释掉也没事-->
+        <!--<prudent>false</prudent>-->
+    </appender>
+
+    <!--定义配置项-滚动输出-->
+    <appender name="fileErrorLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--临界值过滤器.过滤掉低于指定临界值的日志-->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <!--设置固定的当日的文件名,可以不固定-->
+        <!--<file>log/log-error/error.log</file>-->
+        <!--日志格式配置-->
+        <encoder><!-- 必须指定，否则不会往文件输出内容 -->
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n</pattern>
+        </encoder>
+        <!--滚动策略-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--设置路径和文件名-->
+            <!--如果固定当日文件名,前一天的文件名会重命名为指定格式-->
+            <fileNamePattern>log/log-error/error-%d{yyyyMMdd}.log</fileNamePattern>
+            <!--超过30天的log文件会被自动删除-->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <!--保证是添加而不会覆盖原日志-->
+        <append>false</append>
+        <!--压缩相关,注释掉也没事-->
+        <!--<prudent>false</prudent>-->
+    </appender>
+
+    <!--使用配置项-->
+    <root level="info">
+        <appender-ref ref="consoleLog" />
+        <appender-ref ref="fileInfoLog" />
+        <appender-ref ref="fileWarnLog" />
+        <appender-ref ref="fileErrorLog" />
+    </root>
+
+</configuration>

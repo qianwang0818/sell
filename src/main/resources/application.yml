@@ -1,0 +1,25 @@
+spring:
+  #spring.datasource:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    username: root
+    password: 123456
+    url: jdbc:mysql://192.168.117.128/sell?characterEncoding=utf-8&useSSL=false
+  #spring.jpa:
+  jpa:
+    database: mysql
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQL5Dialect
+  #spring.jackson:
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+
+server:
+  port: 80
+  context-path: /sell
+
+
+
