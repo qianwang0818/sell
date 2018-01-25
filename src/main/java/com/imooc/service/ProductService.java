@@ -20,11 +20,10 @@ public interface ProductService {
 
     void delete(ProductInfo productInfo);
 
+    /**增加库存*/
+    //void increaseStock(List<CartDTO> cartDTOList);
+
     /**减少库存*/
     void decreaseStock(List<CartDTO> cartDTOList);
-
-    Integer findProductStockByProductId(String productId);
-
-    /**增加库存*/
 
 }

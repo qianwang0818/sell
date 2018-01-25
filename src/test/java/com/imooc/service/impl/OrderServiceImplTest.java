@@ -3,10 +3,13 @@ package com.imooc.service.impl;
 import com.imooc.DTO.OrderDTO;
 import com.imooc.domain.OrderDetail;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
@@ -23,6 +26,7 @@ public class OrderServiceImplTest {
     private OrderServiceImpl orderService;
 
     private final String BUYER_OPENID = "110110";
+    private final String ORDER_ID = "1516800955253995196";
 
     @Test
     public void create() throws Exception {
@@ -42,16 +46,19 @@ public class OrderServiceImplTest {
         OrderDTO result = orderService.create(orderDTO);
 
         log.info("[创建订单]result{}",result);
-
-
     }
 
     @Test
     public void findOne() throws Exception {
+        OrderDTO orderDTO = orderService.findOne(ORDER_ID);
+        Assert.assertEquals(ORDER_ID,orderDTO.getOrderId());
     }
 
     @Test
     public void findList() throws Exception {
+        Page<OrderDTO> orderDTOPage = orderService.findList(BUYER_OPENID, new PageRequest(0, 2));
+        log.info("[分页查询订单列表]: orderDTOPage:{},orderList:{}",orderDTOPage,orderDTOPage.getContent());
+        Assert.assertNotEquals(0,orderDTOPage.getTotalElements());
     }
 
     @Test

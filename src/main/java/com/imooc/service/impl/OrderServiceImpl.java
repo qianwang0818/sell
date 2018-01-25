@@ -2,6 +2,7 @@ package com.imooc.service.impl;
 
 import com.imooc.DTO.CartDTO;
 import com.imooc.DTO.OrderDTO;
+import com.imooc.converter.OrderMasterToOrderDTOConverter;
 import com.imooc.domain.OrderDetail;
 import com.imooc.domain.OrderMaster;
 import com.imooc.domain.ProductInfo;
@@ -17,12 +18,16 @@ import com.imooc.service.ProductService;
 import com.imooc.utils.KeyUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -87,13 +92,30 @@ public class OrderServiceImpl implements OrderService {
     /**查询单个订单*/
     @Override
     public OrderDTO findOne(String orderId) {
-        return null;
+        OrderMaster orderMaster = orderMasterRepository.findOne(orderId);
+        if(orderMaster==null){
+            throw new SellException(ResultEnum.ORDER_NOT_EXIST);
+        }
+        List<OrderDetail> orderDetailList = orderDetailRepository.findByOrOrderId(orderId);
+        if(CollectionUtils.isEmpty(orderDetailList)){
+            throw new SellException(ResultEnum.ORDERDETAIL_NOT_EXIST);
+        }
+        //封装OrderDTO
+        OrderDTO orderDTO = OrderMasterToOrderDTOConverter.convert(orderMaster);
+        orderDTO.setOrderDetailList(orderDetailList);
+        return orderDTO;
     }
 
     /**查询订单列表*/
     @Override
-    public OrderDTO findList(String buyerOpenid, Pageable pageable) {
-        return null;
+    public Page<OrderDTO> findList(String buyerOpenid, Pageable pageable) {
+        //查到Page<OrderMaster>
+        Page<OrderMaster> orderMasterPage = orderMasterRepository.findByBuyerOpenid(buyerOpenid,pageable);
+        //将List<OrderMaster>转换成List<OrderDTO>
+        List<OrderDTO> orderDTOList = OrderMasterToOrderDTOConverter.convert(orderMasterPage.getContent());
+        //构造Page<OrderDTO>对象并返回
+        Page<OrderDTO> orderDTOPage = new PageImpl<>(orderDTOList, pageable, orderMasterPage.getTotalElements());
+        return orderDTOPage;
     }
 
     /**取消订单*/

@@ -64,10 +64,5 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
-    @Override
-    public Integer findProductStockByProductId(String productId) {
-        ProductInfo productInfo = productInfoRepository.findOne(productId);
-        return productInfo!=null ? productInfo.getProductStock() : 0;
-    }
 
 }
