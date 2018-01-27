@@ -8,7 +8,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.sql.Date;
 
 @Entity
 @Table(name = "order_master", schema = "sell", catalog = "")
@@ -36,8 +36,8 @@ public class OrderMaster {
     private Integer payStatus = PayStatusEnum.UNPAY.getCode();      //默认未支付,等待支付
     //创建时间和更新时间在排序显示时会有用
     @Column(name = "create_time")
-    private Timestamp createTime;
+    private Date createTime;
     @Column(name = "update_time")
-    private Timestamp updateTime;
+    private Date updateTime;
 
 }

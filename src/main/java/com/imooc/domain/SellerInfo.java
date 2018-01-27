@@ -5,7 +5,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
+import java.sql.Date;
 
 @Entity
 @Table(name = "seller_info", schema = "sell", catalog = "")
@@ -25,9 +25,9 @@ public class SellerInfo {
     @Column(name = "openid")
     private String openid;
     @Column(name = "create_time")
-    private Timestamp createTime;
+    private Date createTime;
     @Column(name = "update_time")
-    private Timestamp updateTime;
+    private Date updateTime;
 
 
 }

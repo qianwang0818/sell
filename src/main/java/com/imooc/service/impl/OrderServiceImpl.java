@@ -2,7 +2,7 @@ package com.imooc.service.impl;
 
 import com.imooc.DTO.CartDTO;
 import com.imooc.DTO.OrderDTO;
-import com.imooc.converter.OrderMasterToOrderDTOConverter;
+import com.imooc.converter.OrderConverter;
 import com.imooc.domain.OrderDetail;
 import com.imooc.domain.OrderMaster;
 import com.imooc.domain.ProductInfo;
@@ -12,10 +12,10 @@ import com.imooc.enums.ResultEnum;
 import com.imooc.exception.SellException;
 import com.imooc.repository.OrderDetailRepository;
 import com.imooc.repository.OrderMasterRepository;
-import com.imooc.repository.ProductInfoRepository;
 import com.imooc.service.OrderService;
 import com.imooc.service.ProductService;
 import com.imooc.utils.KeyUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,12 +27,12 @@ import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Transactional
 @Service
+@Slf4j
 public class OrderServiceImpl implements OrderService {
 
     @Autowired
@@ -71,12 +71,12 @@ public class OrderServiceImpl implements OrderService {
         }
 
         //3.数据库添加订单OrderMaster
+        orderDTO.setOrderId(orderId);   //先赋值再拷贝,Controller层需要orderDTO里面的orderId
         OrderMaster orderMaster = new OrderMaster();
-        BeanUtils.copyProperties(orderDTO,orderMaster); //先拷贝字段,再做下面的赋值,以免覆盖
-        orderMaster.setOrderId(orderId);            //赋值
-        orderMaster.setOrderAmount(orderAmount);    //赋值
-        orderMaster.setOrderStatus(OrderStatusEnum.NEW.getCode());  //被null覆盖了,重新赋值
-        orderMaster.setPayStatus(PayStatusEnum.UNPAY.getCode());  //被null覆盖了,重新赋值
+        BeanUtils.copyProperties(orderDTO,orderMaster); //拷贝字段,会把null也拷贝过去
+        orderMaster.setOrderAmount(orderAmount);        //赋值,覆盖null
+        orderMaster.setOrderStatus(OrderStatusEnum.NEW.getCode());  //拷贝时被null覆盖了,重新赋值
+        orderMaster.setPayStatus(PayStatusEnum.UNPAY.getCode());    //拷贝时被null覆盖了,重新赋值
         orderMasterRepository.save(orderMaster);
 
         //4.扣除库存
@@ -101,7 +101,7 @@ public class OrderServiceImpl implements OrderService {
             throw new SellException(ResultEnum.ORDERDETAIL_NOT_EXIST);
         }
         //封装OrderDTO
-        OrderDTO orderDTO = OrderMasterToOrderDTOConverter.convert(orderMaster);
+        OrderDTO orderDTO = OrderConverter.convertFromOrderMasterToOrderDTO(orderMaster);
         orderDTO.setOrderDetailList(orderDetailList);
         return orderDTO;
     }
@@ -109,10 +109,12 @@ public class OrderServiceImpl implements OrderService {
     /**查询订单列表*/
     @Override
     public Page<OrderDTO> findList(String buyerOpenid, Pageable pageable) {
+
+
         //查到Page<OrderMaster>
         Page<OrderMaster> orderMasterPage = orderMasterRepository.findByBuyerOpenid(buyerOpenid,pageable);
         //将List<OrderMaster>转换成List<OrderDTO>
-        List<OrderDTO> orderDTOList = OrderMasterToOrderDTOConverter.convert(orderMasterPage.getContent());
+        List<OrderDTO> orderDTOList = OrderConverter.convertFromOrderMasterToOrderDTO(orderMasterPage.getContent());
         //构造Page<OrderDTO>对象并返回
         Page<OrderDTO> orderDTOPage = new PageImpl<>(orderDTOList, pageable, orderMasterPage.getTotalElements());
         return orderDTOPage;
@@ -121,18 +123,76 @@ public class OrderServiceImpl implements OrderService {
     /**取消订单*/
     @Override
     public OrderDTO cancel(OrderDTO orderDTO) {
-        return null;
+        //判断订单状态
+        if(!orderDTO.getOrderStatus().equals(OrderStatusEnum.NEW.getCode())){
+            log.error("【取消订单】订单状态不正确,orderId={},orderStatus={}",orderDTO.getOrderId(),orderDTO.getOrderStatus());
+            throw new SellException(ResultEnum.ORDER_STATUS_ERROR);
+        }
+        //修改订单状态为取消
+        orderDTO.setOrderStatus(OrderStatusEnum.CANCEL.getCode());
+        OrderMaster orderMaster = OrderConverter.convertFromOrderDTOToOrderMaster(orderDTO);
+        OrderMaster updateResult = orderMasterRepository.save(orderMaster);
+        if(updateResult==null){
+            log.error("【取消订单】状态更新失败,orderMaster={}",orderMaster);
+            throw new SellException(ResultEnum.ORDER_UPDATE_FAIL);
+        }
+        //返还库存
+        List<OrderDetail> orderDetailList = orderDTO.getOrderDetailList();
+        if(CollectionUtils.isEmpty(orderDetailList)){
+            log.error("【取消订单】订单中无商品,orderDTO={}",orderDTO);
+            throw new SellException(ResultEnum.ORDER_DETAIL_EMPTY);
+        }
+        List<CartDTO> cartDTOList = orderDetailList.stream().map(e -> new CartDTO(e.getProductId(), e.getProductQuantity())).collect(Collectors.toList());
+        productService.increaseStock(cartDTOList);
+        //如果已支付,需退款
+        if(orderDTO.getPayStatus().equals(PayStatusEnum.PAID.getCode())){
+            //TODO
+        }
+        return orderDTO;
     }
 
     /**完结订单*/
     @Override
     public OrderDTO finish(OrderDTO orderDTO) {
-        return null;
+        //判断订单状态
+        if(!orderDTO.getOrderStatus().equals(OrderStatusEnum.NEW.getCode())){
+            log.error("【完结订单】订单状态不正确,orderId={},orderStatus={}",orderDTO.getOrderId(),orderDTO.getOrderStatus());
+            throw new SellException(ResultEnum.ORDER_STATUS_ERROR);
+        }
+        //修改订单状态为完结
+        orderDTO.setOrderStatus(OrderStatusEnum.FINISHED.getCode());
+        OrderMaster orderMaster = OrderConverter.convertFromOrderDTOToOrderMaster(orderDTO);
+        OrderMaster updateResult = orderMasterRepository.save(orderMaster);
+        if(updateResult==null){
+            log.error("【取消订单】状态更新失败,orderMaster={}",orderMaster);
+            throw new SellException(ResultEnum.ORDER_UPDATE_FAIL);
+        }
+        return orderDTO;
     }
 
     /**支付订单*/
     @Override
     public OrderDTO paid(OrderDTO orderDTO) {
-        return null;
+        //判断订单状态
+        if(!orderDTO.getOrderStatus().equals(OrderStatusEnum.NEW.getCode())){
+            log.error("【支付订单】订单状态不正确,orderId={},orderStatus={}",orderDTO.getOrderId(),orderDTO.getOrderStatus());
+            throw new SellException(ResultEnum.ORDER_STATUS_ERROR);
+        }
+        //判断支付状态
+        if(!orderDTO.getPayStatus().equals(PayStatusEnum.UNPAY.getCode())){
+            log.error("【完结订单】支付状态不正确,orderId={},payStatus={}",orderDTO.getOrderId(),orderDTO.getPayStatus());
+            throw new SellException(ResultEnum.ORDER_PAY_STATUS_ERROR);
+        }
+        //执行支付操作 TODO
+
+        //修改支付状态
+        orderDTO.setPayStatus(PayStatusEnum.PAID.getCode());
+        OrderMaster orderMaster = OrderConverter.convertFromOrderDTOToOrderMaster(orderDTO);
+        OrderMaster updateResult = orderMasterRepository.save(orderMaster);
+        if(updateResult==null){
+            log.error("【完结订单】状态更新失败,orderMaster={}",orderMaster);
+            throw new SellException(ResultEnum.ORDER_UPDATE_FAIL);
+        }
+        return orderDTO;
     }
 }
