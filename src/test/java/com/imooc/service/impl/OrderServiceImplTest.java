@@ -4,6 +4,7 @@ import com.imooc.DTO.OrderDTO;
 import com.imooc.domain.OrderDetail;
 import com.imooc.enums.OrderStatusEnum;
 import com.imooc.enums.PayStatusEnum;
+import com.imooc.repository.OrderMasterRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Test;
@@ -29,6 +30,7 @@ public class OrderServiceImplTest {
 
     private final String BUYER_OPENID = "110110";
     private final String ORDER_ID = "1516800955253995196";
+
 
     @Test
     public void create() throws Exception {
@@ -82,6 +84,14 @@ public class OrderServiceImplTest {
         OrderDTO orderDTO = orderService.findOne(ORDER_ID);
         OrderDTO result = orderService.paid(orderDTO);
         Assert.assertEquals(PayStatusEnum.PAID.getCode(),result.getPayStatus());
+    }
+
+    @Test
+    public void list() throws Exception {
+        Page<OrderDTO> orderDTOPage = orderService.findList( new PageRequest(0, 5));
+        log.info("[分页查询订单列表]: orderDTOPage:{},orderList:{}",orderDTOPage,orderDTOPage.getContent());
+        //Assert.assertNotEquals(0,orderDTOPage.getTotalElements());
+        Assert.assertTrue("查询所有的订单列表",orderDTOPage.getTotalElements() > 0);
     }
 
 }

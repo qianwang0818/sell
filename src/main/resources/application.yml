@@ -17,7 +17,13 @@ spring:
     time-zone: GMT+8
     date-format: yyyy-MM-dd HH:mm:ss
     default-property-inclusion: non_null
-
+  #spring.mvc
+  mvc:
+    view:
+      suffix: .ftl
+  #spring.freemarker
+  freemarker:
+    cache: false
 
 server:
   port: 80

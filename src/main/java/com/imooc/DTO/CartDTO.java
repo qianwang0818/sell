@@ -1,5 +1,6 @@
 package com.imooc.DTO;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
@@ -8,6 +9,7 @@ import lombok.Data;
  * 2017-06-11 19:37
  */
 @Data
+@AllArgsConstructor
 public class CartDTO {
 
     /** 商品Id. */
@@ -16,8 +18,4 @@ public class CartDTO {
     /** 数量. */
     private Integer productQuantity;
 
-    public CartDTO(String productId, Integer productQuantity) {
-        this.productId = productId;
-        this.productQuantity = productQuantity;
-    }
 }
