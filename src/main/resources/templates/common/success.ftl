@@ -26,7 +26,7 @@
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                     <h4>
                         成功!
-                    </h4> <strong>${msg}</strong>&nbsp;&nbsp;&nbsp;
+                    </h4> <strong>${msg!""}</strong>&nbsp;&nbsp;&nbsp;
                     <span id="secondId">3</span>秒后自动跳转
                     <a href="${url}" class="alert-link">手动跳转</a>
                 </div>

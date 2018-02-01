@@ -1,5 +1,8 @@
 package com.imooc.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.imooc.enums.ProductStatusEnum;
+import com.imooc.utils.EnumUtils;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
@@ -8,6 +11,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Date;
 
 @Entity
 @Table(name = "product_info", schema = "sell", catalog = "")
@@ -36,6 +40,15 @@ public class ProductInfo {
     private Integer productStatus;     //正常:0 , 下架1
     @Column(name = "category_type")
     private Integer categoryType;
+    @Column(name = "create_time")
+    private Date createTime;
+    @Column(name = "update_time")
+    private Date updateTime;
+
+    @JsonIgnore
+    public ProductStatusEnum getProductStatusEnum(){
+        return EnumUtils.getByCode(productStatus , ProductStatusEnum.class);
+    }
 
     public ProductInfo(String productName, BigDecimal productPrice, Integer productStock, String productDescription, String productIcon, Integer productStatus, Integer categoryType) {
         this.productName = productName;

@@ -14,10 +14,13 @@ public interface ProductService {
     /**查询正常上架商品*/
     List<ProductInfo> findUpAll();
 
+    /**查询所有商品(不区分上下架)*/
     Page<ProductInfo> findAll(Pageable pageable);
 
+    /**商品新增*/
     ProductInfo save(ProductInfo productInfo);
 
+    /**商品删除*/
     void delete(ProductInfo productInfo);
 
     /**增加库存*/
@@ -26,4 +29,9 @@ public interface ProductService {
     /**减少库存*/
     void decreaseStock(List<CartDTO> cartDTOList);
 
+    /**商品上架*/
+    ProductInfo onSale(String productId);
+
+    /**商品下架*/
+    ProductInfo offSale(String productId);
 }

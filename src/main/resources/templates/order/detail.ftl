@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>卖家商品列表</title>
-    <link href="https://cdn.bootcss.com/bootstrap/3.0.1/css/bootstrap.min.css" rel="stylesheet">
-</head>
+    <#include "../common/header.ftl">
 <body>
 
-    <div class="container">
+<div id="wrapper" class="toggled">
+    <#--侧边栏sidebar-->
+    <#include "../common/nav.ftl">
+    <#--主要内容content-->
+    <div id="page-content-wrapper">
+
+
+
+
+        <div class="container-fluid">
         <div class="row clearfix">
             <#--订单概要-->
             <div class="col-md-4 column">
@@ -65,5 +70,10 @@
         </div>
     </div>
 
+
+
+
+    </div>
+</div>
 </body>
 </html>

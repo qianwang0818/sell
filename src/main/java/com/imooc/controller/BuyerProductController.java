@@ -36,10 +36,6 @@ public class BuyerProductController {
 
         //2.根据所有上架商品,查询类目,(一次性查询,传入List,用in关键字查询)
         //2.1 将 List<ProductInfo> 转成 List<Integer> .有两种方式:
-        //2.1.1 传统方式: for循环
-        /*List<Integer> categoryTypeList = new ArrayList<Integer>();
-        for (ProductInfo productInfo : productInfoList) {categoryTypeList.add(productInfo.getCategoryType());}*/
-        //2.1.2 JDK1.8方式: lambda表达式
         List<Integer> categoryTypeList = productInfoList.stream().map(e -> e.getCategoryType()).collect(Collectors.toList());
         //2.2 将List<Integer>作为in查询的参数查询所有类目
         List<ProductCategory> productCategoryList = categoryService.findByCategoryTypeIn(categoryTypeList);

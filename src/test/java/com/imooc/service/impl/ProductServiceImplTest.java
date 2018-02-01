@@ -20,7 +20,9 @@ import static org.junit.Assert.*;
 @SpringBootTest
 public class ProductServiceImplTest {
 
-    @Autowired
+     private final String PRODUCT_ID="8a7e8618611c969801611c96a5c90000";
+
+     @Autowired
     private ProductServiceImpl productService;
 
     @Test
@@ -55,5 +57,17 @@ public class ProductServiceImplTest {
         productInfo.setProductId("8a7e8618611cbcaa01611cbcb8120000");
         productService.delete(productInfo);
     }
+
+     @Test
+     public void onsale() throws Exception {
+         ProductInfo productInfo = productService.onSale(PRODUCT_ID);
+         Assert.assertEquals(ProductStatusEnum.UP,productInfo.getProductStatusEnum());
+     }
+
+     @Test
+     public void offsale() throws Exception {
+         ProductInfo productInfo = productService.offSale(PRODUCT_ID);
+         Assert.assertEquals(ProductStatusEnum.DOWN,productInfo.getProductStatusEnum());
+     }
 
 }

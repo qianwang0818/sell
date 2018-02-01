@@ -7,6 +7,7 @@ import com.imooc.enums.ResultEnum;
 import com.imooc.exception.SellException;
 import com.imooc.repository.ProductInfoRepository;
 import com.imooc.service.ProductService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @Transactional
 @Service
+@Slf4j
 public class ProductServiceImpl implements ProductService {
 
     @Autowired
@@ -76,6 +78,35 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+    @Override
+    public ProductInfo onSale(String productId) {
+        ProductInfo productInfo = productInfoRepository.findOne(productId);
+        if(productInfo==null){
+            log.error("【商品上架】根据productId找不到对应商品,productId:{}",productId);
+            throw new SellException(ResultEnum.PRODUCT_NOT_EXIST);
+        }
+        if(productInfo.getProductStatusEnum()!=null && productInfo.getProductStatusEnum()==ProductStatusEnum.UP){
+            throw new SellException(ResultEnum.PRODUCT_STATUS_ERROR);   //已经是上架状态无须修改为上架
+        }
+        //更新状态为上架
+        productInfo.setProductStatus(ProductStatusEnum.UP.getCode());
+        return productInfoRepository.save(productInfo);
+    }
+
+    @Override
+    public ProductInfo offSale(String productId) {
+        ProductInfo productInfo = productInfoRepository.findOne(productId);
+        if(productInfo==null){
+            log.error("【商品上架】根据productId找不到对应商品,productId:{}",productId);
+            throw new SellException(ResultEnum.PRODUCT_NOT_EXIST);
+        }
+        if(productInfo.getProductStatusEnum()!=null && productInfo.getProductStatusEnum()==ProductStatusEnum.DOWN){
+            throw new SellException(ResultEnum.PRODUCT_STATUS_ERROR);   //已经是下架状态无须修改为下架
+        }
+        //更新状态
+        productInfo.setProductStatus(ProductStatusEnum.DOWN.getCode());
+        return productInfoRepository.save(productInfo);
+    }
 
 
 }
