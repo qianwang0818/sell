@@ -43,6 +43,7 @@ public enum ResultEnum {
 
     LOGOUT_SUCCESS(26, "登出成功"),
 
+    CATEGORY_NOT_EXIST(50, "类目不存在"),
 
     ;
 

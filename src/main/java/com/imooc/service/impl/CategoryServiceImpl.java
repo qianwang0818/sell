@@ -4,6 +4,8 @@ import com.imooc.domain.ProductCategory;
 import com.imooc.repository.ProductCategoryRepository;
 import com.imooc.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +26,11 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<ProductCategory> findAll() {
         return productCategoryRepository.findAll();
+    }
+
+    @Override
+    public Page<ProductCategory> findAll(Pageable pageable){
+        return productCategoryRepository.findAll(pageable);
     }
 
     @Override

@@ -37,7 +37,7 @@ public class ProductInfo {
     @Column(name = "product_icon")
     private String productIcon;
     @Column(name = "product_status")
-    private Integer productStatus;     //正常:0 , 下架1
+    private Integer productStatus = ProductStatusEnum.UP.getCode();     //正常:0 , 下架1
     @Column(name = "category_type")
     private Integer categoryType;
     @Column(name = "create_time")

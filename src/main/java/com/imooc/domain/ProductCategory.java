@@ -1,10 +1,13 @@
 package com.imooc.domain;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.imooc.utils.serializer.DateToLongSerializer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "product_category", schema = "sell", catalog = "")
@@ -19,6 +22,11 @@ public class ProductCategory {
     private String categoryName;
     @Column(name = "category_type")
     private Integer categoryType;
+    @JsonSerialize(using = DateToLongSerializer.class)
+    private Date updateTime;
+    @JsonSerialize(using = DateToLongSerializer.class)
+    private Date createTime;
+
 
     public ProductCategory(String categoryName, Integer categoryType) {
         this.categoryName = categoryName;
