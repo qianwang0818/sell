@@ -9,6 +9,7 @@ import com.imooc.domain.ProductInfo;
 import com.imooc.enums.OrderStatusEnum;
 import com.imooc.enums.PayStatusEnum;
 import com.imooc.enums.ResultEnum;
+import com.imooc.exception.ResponseBankException;
 import com.imooc.exception.SellException;
 import com.imooc.repository.OrderDetailRepository;
 import com.imooc.repository.OrderMasterRepository;
@@ -66,6 +67,7 @@ public class OrderServiceImpl implements OrderService {
             ProductInfo productInfo = productService.findOne(orderDetail.getProductId());
             if(productInfo==null){  //如果根据pid找不到相应的商品
                 throw new SellException(ResultEnum.PRODUCT_NOT_EXIST);
+                //throw new ResponseBankException(ResultEnum.PRODUCT_NOT_EXIST);    //演示更改响应状态码为403
             }
             //2.计算订单总价:  商品总价 += 商品单价*商品数量
             BigDecimal price = productInfo.getProductPrice();   //数据库查出的单价,不是前端传过来的
