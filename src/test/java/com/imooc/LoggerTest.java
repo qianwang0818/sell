@@ -16,10 +16,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
+/*@RunWith(SpringRunner.class)
+@SpringBootTest*/
 @Slf4j
 public class LoggerTest {
 
@@ -68,4 +69,11 @@ public class LoggerTest {
         }
     }
 
+    @Test
+    public void random(){
+        Random random = new Random();
+        int[] arr = {2,4,6};
+        int i = random.nextInt(arr.length);
+        System.out.println(arr[i]);
+    }
 }

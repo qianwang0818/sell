@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.net.URLEncoder;
+import java.util.Map;
 
 
 @Controller
@@ -59,4 +61,22 @@ public class WechatController {
         //returnUrl = "www.sina.com";
         return "redirect:" + returnUrl + "?openid=" + openId;
     }
+
+    /**访问该url,获得二维码界面.扫一下,会访问微信开放平台.然后微信开放平台会请求qrUserInfo并携带returnUrl和code*/
+    /**这里就跳转到一个login界面,输入框写openid.按提交后,发起302请求到/qrUserInfo */
+    @GetMapping("/qrAuthorize")
+    public ModelAndView qrAuthorize(@RequestParam("returnUrl") String returnUrl,Map<String,Object> map){
+        map.put("returnUrl",returnUrl);
+        return new ModelAndView("login",map);
+    }
+
+    /**微信端访问这个方法*/
+    @GetMapping("/qrUserInfo")
+    public String qrUserInfo(@RequestParam("code") String code,
+                                @RequestParam("state") String returnUrl){
+        String openid = code;
+        return "redirect:"+returnUrl+"?openid="+openid;
+    }
+
+
 }

@@ -1,6 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
     <#include "../common/header.ftl">
+
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script>
+        /*先判断WebSocket是否已内置于浏览器*/
+        var websocket = null;
+        if('WebSocket' in window){
+            websocket = new WebSocket('ws://sellsell.s1.natapp.cc/sell/webSocket')
+        }else {
+            alert('该浏览器不支持WebSocket!')
+        }
+
+        /*WebSocket初始化时*/
+        websocket.onopen = function (event) {
+            console.log('建立WebSocket连接')
+        }
+
+        /*WebSocket关闭时*/
+        websocket.onclose = function (event) {
+            console.log('关闭WebSocket连接')
+        }
+
+        /*监听到新消息时*/
+        websocket.onmessage = function (event) {
+            console.log('收到消息:'+event.data)
+            //做相关的反应操作
+            //弹出遮罩窗体
+            $("#orderId").html(event.data);
+            $("#myModal").modal('show');
+            document.getElementById("notice").play();
+        }
+
+        /*WebSocket发生错误时*/
+        websocket.onerror = function () {
+            alert('WebSocket通信发生错误');
+        }
+
+        /*本页面关闭时*/
+        window.onbeforeunload = function () {
+            websocket.close();
+        }
+    </script>
+
+    <audio id="notice" loop="loop">
+        <source src="/sell/snd/KARA-STEP.mp3" type="audio/mpeg">
+    </audio>
 <body>
 
 <div id="wrapper" class="toggled">
@@ -8,8 +54,6 @@
     <#include "../common/nav.ftl">
     <#--主要内容content-->
     <div id="page-content-wrapper">
-
-
 
 
         <div class="container-fluid">
@@ -101,6 +145,27 @@
         </div>
 
 
+        <#--遮罩窗体-->
+        <div class="modal fade" id="myModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title" id="myModalLabel">
+                            提醒消息
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        您有新的订单,订单号:<span id="orderId"></span>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" onclick="location.reload()">查看</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal"
+                            onclick="javascript:document.getElementById('notice').pause()">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
     </div>

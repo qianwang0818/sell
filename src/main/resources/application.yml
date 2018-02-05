@@ -12,6 +12,11 @@ spring:
     hibernate:
       ddl-auto: update
     database-platform: org.hibernate.dialect.MySQL5Dialect
+  #spring.redis:
+  redis:
+    host: 192.168.38.178
+    port: 6379
+    password:
   #spring.jackson:
   jackson:
     time-zone: GMT+8
@@ -34,3 +39,8 @@ wechat:
   mpAppId: wx68d02101e4c85515
   mpAppSecret: 71e1f49fa5f9983b16d0620b4df888cd
   natappUrl: http://sellsell.s1.natapp.cc
+  templateId:
+    orderStatus: t5jEP6-WWkL-e9IVxwqXIm7lz38Hwnn9iDTvBF31OKg
+
+projectUrl:
+  sell: http://sellsell.s1.natapp.cc

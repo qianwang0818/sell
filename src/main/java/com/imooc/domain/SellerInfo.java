@@ -14,10 +14,10 @@ import java.sql.Date;
 public class SellerInfo {
 
     @Id
-    @Column(name = "id")
+    @Column(name = "seller_id")
     @GeneratedValue(generator = "mytableGenerator")
     @GenericGenerator(name = "mytableGenerator", strategy = "uuid")
-    private String id;
+    private String sellerId;
     @Column(name = "username")
     private String username;
     @Column(name = "password")
